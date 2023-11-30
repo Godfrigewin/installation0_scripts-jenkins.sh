@@ -1,0 +1,604 @@
+Jenkins:
+--------
+Jenkins is an continuous interation tool, open source (code is available and anyone can use them), java based but supports multiple languages.
+
+Git-->Source code management
+Maven-->create packages
+Tomcat-->deploy applications
+SonarQube-->Code quality analysis
+Nexus-->remote artifact repo
+
+All these tools will be integrated and automated through Jenkins
+
+CI: Continous Integration-
+--------------------------
+CI is the process of automating the build and testing the code when developers push the code from the SCM
+
+Benefits of Jenkins:
+--------------------
+1. Immediate bug detection
+2. No integration step in the s/w development life cycle
+3. A deployable systen at any given project
+4. Record of evolution of the project
+
+History of Jenkins:
+-------------------
+2004-->Hudson-->Hudson Opensource Community
+2011-->Oracle-->Jenkins-->used for community led projects
+Jenkins-->features-->
+	1. supports multiple language
+	2. plugins for integrating with other tools, support for cloud environments and for opensource tools
+Jacoco-->very known plugin of jenkins
+
+Continuous Delivery:
+--------------------
+code done-->unit test-->integrate-->acceptance test-->deploy to prod env
+auto       auto         auto                        manual
+
+Continuous Deployment:
+----------------------
+code done-->unit test-->integrate-->acceptance test-->deploy to prod env
+auto       auto         auto                        auto
+
+What Jenkins can do:
+--------------------
+	- Integrate with many different Version control system
+	- Generate test report(JUnit)
+	- Push the builds to various artifacts used for generate reports
+	- Deploys directly tp rpoduction/test environment
+	- Notify stackholders of build status(through Email)
+Communication Tools:
+--------------------
+www.slack.com
+
+List of popular continuous integartion tools:
+---------------------------------------------
+Product				Is OS?
+Jenkins				yes
+Cloudbees Jenkins		No
+Bamboo				No
+Cruise Control			Yes
+Travis CI			Yes and pay
+Circle CI			yes and pay
+GitLab CI			yes and pay
+TeamCity			yes and pay
+
+Installation of Jenkins:
+------------------------
+JRE
+Community Edition of Jenkins
+4GB RAM-->t2.medium-->2CPU CORE-->1 for installing Jenkins and other for integrating all other server
+
+- create an ec2-instance for jenkins
+- connect to Jenkins server
+- switch to root: sudo su -
+- check for java -version
+- yum install java-11-openjdk-devel -y
+- yum install wget -y
+- sudo wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo
+  sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key --->install jenkins pckg
+- yum install jenkins
+- systemctl enable jenkins --> enabling jenkins server
+- systemctl start jenkins --> starting the server
+- systemctl status jenkins --> server is active/inactive
+- Changes in security group--> edit inbound rules--> add rule--> All TCP-->Anywhere IPV4 -->save rules
+- copy the ipv4:8080--> open in browser
+- copy the path where admin token is stored
+- cat path-->copy
+- give credentilas--> save and finish
+
+Jenkins 2:
+----------
+/var/lib/jenkins-->jenkins home dir' defalut
+custom-->/opt/
+
+poll SCM--> 
+commit id--> build and also for every code
+updated code--> build commit id same and code commit id will differ
+
+http://172.31.36.216:8080/github-webhook/
+
+Disable this project
+Delete workspace before builds start
+Add timestamps to the console o/p
+
+Jacoco (Java Code Coverage) Plugin: code coverage--> 85%
+
+
+Jenkins Directory Structure:
+----------------------------
+/var/lib/jenkins--->default home dir' path
+
+Important subdirectories:
+-------------------------
+jobs--> contains all projects as job
+	-builds dir'-->contains build infor'
+	-nextBuildNumber--> file-->nextBuildno
+
+tools-->contains s/w installed through global tool configuration
+workspace-->contains project source code
+	citibank-dev2
+	citibank-dev2@tmp
+plugins-->contains plugins installed
+users--> contains users information like users.aml file
+updates-->contains all updates of jenkins
+secrets
+
+Create a CICD for java Application using Maven Project Type:
+------------------------------------------------------------
+Freestyle project type:
+-----------------------
+citibank-dev2
+citibank-qa
+
+Maven Project Type:
+-------------------
+MavenIntegration Plugin
+
+citibank.xml-->yes
+
+mvn clean package -f citibank.xml
+
+
+Plugin management:
+------------------
+	- Deploy to container-->deploying application in Tomcat,Glassfish and Jfrog
+	- Deploy weblogic--> Deploy in weblogic
+	- Webshepre Deployer--> Deploy websphere
+	- Maven Integration-->to get maven-project-type
+	- Safe Restart
+	- Next Build Number
+	- JaCoCo
+	- SSH Agent
+	- Email Extension
+	- SonarQube
+	- Audit Trail--> keeps track of who the user is and his actions regarding projects
+	- Job COnfig History
+	- Schedule Build
+	- Blue Ocean--> GUI 
+	- Publish Over SSH
+	- ThinBackUp
+	- Build Name setter
+	- Convert to Pipeline
+
+systemctl restart jenkins
+
+http://3.108.221.170:8080/restart
+http://3.108.221.170:8080/safeRestart
+
+audittrail.log.0-->10MB
+audittrail.log.1-->10mb
+audittrail.log.2
+audittrail.log.3
+audittrail.log.4
+audittrail.log.5
+
+Jenkins view 
+Jenkins Security-->Role based authorization strategy
+Jenkins Backup
+
+Urban code Deploy-->IBM-->HCL
+
+AppScan
+
+vera code
+sonarqube
+fortify-->HP
+
+
+Jenkins Security:
+-----------------
+DevOps:
+-------
+Rakesh
+Sai
+
+Developers:
+-----------
+Aravind
+Anjan
+
+/var/lib/jenkins--->config.xml---><userSecurity>false</userSecurity>
+
+
+Jenkins Backup:
+---------------
+rsync-->1server to other server
+
+jenkins Migration:
+------------------
+
+Create a CICD for java project using pipeline type:
+---------------------------------------------------
+- to create a cicd project using pipeline type we'll be writing pipeline script
+Pipeline script can be written in two ways:
+1. Scripted way--> Grovy script
+2. Declarative way
+
+* Features: or the need of pipeline projects:
+---------------------------------------------
+1. Using pipeline we can customize the CICD flow likw how it's required by us
+2. Integrating other tools will be easily done without any difficulties
+3. Many in-built functionalities are there and we can call then when needed
+
+node
+{
+...scripts...
+} 
+node-->represents in which server we need to run the script
+master-->slave
+
+node('citibanknode')
+{
+...script...
+}
+
+master node--->built-in node
+
+First step:
+-----------
+fetch the code from github repo to jenkins
+
+Second step:
+------------
+perform the build
+
+Third step:
+-----------
+Execute sonarqube report
+
+Fourth step:
+------------
+Upload artifacts
+
+Fifth step:
+-----------
+Deploying appli' in Tomcat server
+
+node{
+def mavenHome = tool name: 'maven3.8.5'
+//CheckoutCode from git
+stage('CheckoutCode'){
+git branch: 'development', credentialsId: '3618ffee-d89b-42a7-95c6-644de0cd31b4', url: 'https://github.com/citibank-DevOps/maven-web-application.git'
+}
+
+//Build
+stage('Build')
+{
+  sh "${mavenHome}/bin/mvn clean package"
+}
+
+//Execute SonarQube report
+stage('ExecuteSonarQubeReport')
+{
+ sh "${mavenHome}/bin/mvn sonar:sonar"
+}
+
+//UploadArtifacts into Nexus
+stage('UploadArtifactsIntoNexus')
+{
+ sh "${mavenHome}/bin/mvn deploy" 
+}
+
+//Deploy application into tomcat server
+stage('DeployApp')
+{
+sshagent(['35bd916b-b69a-4325-bbe8-4a19b884c335']) {
+    sh "scp -o StrictHostKeyChecking=no target/maven-web-application.war ec2-user@172.31.3.157:/opt/apache-tomcat-9.0.70/webapps"
+}
+}
+}//node closing
+
+
+
+/var/lib/jenkins/tools/hudson.tasks.Maven_MavenInstallation/maven3.8.5
+
+scp
+
+To check Jenkins Variable refernce:
+------------------------------------
+
+
+properties([buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '5', daysToKeepStr: '', numToKeepStr: '5')), [$class: 'JobLocalConfiguration', changeReasonComment: ''], pipelineTriggers([pollSCM('* * * * *')])])
+
+
+def sendSlackNotification(String buildStatus = 'STARTED') {
+  // build status of null means successful
+  buildStatus =  buildStatus ?: 'SUCCESSFUL'
+
+  // Default values
+  def colorName = 'RED'
+  def colorCode = '#FF0000'
+  def subject = "${buildStatus}: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'"
+  def summary = "${subject} (${env.BUILD_URL})"
+
+  // Override default values based on build status
+  if (buildStatus == 'STARTED') {
+    color = 'YELLOW'
+    colorCode = '#FFFF00'
+  } else if (buildStatus == 'SUCCESSFUL') {
+    color = 'GREEN'
+    colorCode = '#00FF00'
+  } else {
+    color = 'RED'
+    colorCode = '#FF0000'
+  }
+
+  // Send notifications
+  slackSend (color: colorCode, message: summary)
+}
+try
+{
+
+}
+catch(e)
+{
+currentBuild.result="FAILURE"
+}
+finally
+{
+sendSlackNotification(currentBuild.result)
+}
+
+try-->code which expect error
+catch-->to catch the error/excetion
+finally-->irrespective to some build status whether build is pass/fail and if I want to execute some commands 
+
+
+Declarative way:
+----------------
+node
+{
+
+}
+
+pipeline
+{
+agent any
+stages
+	{
+//CheckoutCode from git
+stage('CheckoutCode')
+	{
+steps
+{
+git branch: 'development', credentialsId: '3618ffee-d89b-42a7-95c6-644de0cd31b4', url: 'https://github.com/citibank-DevOps/maven-web-application.git'
+}
+	}
+//Build
+stage('Build')
+	{
+steps{
+  sh "${mavenHome}/bin/mvn clean package"
+}
+	}
+//Execute SonarQube report
+stage('ExecuteSonarQubeReport')
+{
+steps{
+ sh "mvn clean sonar:sonar"
+}
+}
+
+
+
+//UploadArtifacts into Nexus
+stage('UploadArtifactsIntoNexus')
+{
+steps{
+ sh "mvn clean deploy"
+} 
+}
+
+//Deploy application into tomcat server
+stage('DeployApp')
+{
+steps{
+sshagent(['35bd916b-b69a-4325-bbe8-4a19b884c335']) {
+    sh "scp -o StrictHostKeyChecking=no target/maven-web-application.war ec2-user@172.31.3.157:/opt/apache-tomcat-9.0.70/webapps"
+}
+}
+}
+	}
+}
+tools
+{
+maven 'maven3.8.5'
+}
+
+-Build with parameters
+-CICD for NodeJS Project
+-Upstream job, Downstream job
+
+citibank-dev-->development
+citibank-qa-->stage
+citibank-prod-->master
+
+Instead of creating different ennvironment job is it possible to pass the branch name and repo url dynamically?
+
+How to get the parameter value in pipeline script?
+"${params.parameterName}"
+
+BuildwithParameters:
+--------------------
+pipeline{
+    agent any
+    tools
+    {
+        maven 'maven3.8.5'
+    }
+    parameters {
+  choice choices: ['development', 'stage', 'master', 'qa'], description: 'select the branch name', name: 'BranchName'
+  string defaultValue: 'PavithraDevOps', description: 'change the default value if you want', name: 'CompanyName'
+}
+stages{
+    stage('CheckoutCode')
+    {
+        steps{
+            git branch: "${params.BranchName}", credentialsId: '3618ffee-d89b-42a7-95c6-644de0cd31b4', url: 'https://github.com/citibank-DevOps/maven-web-application.git'
+        }
+    }
+    stage('Build')
+    {
+        steps{
+            sh "mvn clean package"
+        }
+    }
+}
+}
+
+-CICD for NodeJS Project
+-------------------------
+git-->maven-->sonar-->Nexus-->tomcat-->slack
+git-->npm(node package module)-->sonar-->nexus-->jenkins:9981/context
+NOdeJs Plugin
+NodejsRepourl--> http://65.0.21.86:9980/pavithradevops/repository/nodejsrepo/
+
+node
+{
+    //Fetch code from github
+stage('CheckOutCode')
+{
+git branch: 'dev', credentialsId: '3618ffee-d89b-42a7-95c6-644de0cd31b4', url: 'https://github.com/citibank-DevOps/nodejs-app-mss.git'
+}
+
+//Generate Build
+stage('Build')
+{
+    nodejs(nodeJSInstallationName: 'NodeJS 19.1.0')
+    {
+    sh "npm install"
+    }
+}
+
+//Execute SonarQube report
+stage('ExecuteSonarQubeReport')
+{
+    nodejs(nodeJSInstallationName: 'NodeJS 19.1.0')
+    {
+    sh "npm run sonar"
+    }
+}
+
+//Uploading Artifacts
+stage('UploadArtifactsIntoNexusServer')
+{
+	sh "npm publish"
+}
+}//node closing
+
+nodejsrepourl--> https://github.com/citibank-DevOps/nodejs-app-mss.git
+SonarQube Token--> squ_8689afefd154d9879c77445d25976129e1d04670
+
+Maven			NodeJS
+------			-------
+mvn package		npm install-->to make build
+pom.xml			package.json
+(n no.of dependencies)	(n no.of modules)
+pom.xml(sonarQube)	sonar-project.js
+mvn sonar:sonar		npm run sonar-->execute sonarqube report
+pom.xml			package.json-->publishConfig
+DistriBution
+settings.xml		.npmrc-->nexus credential config'
+
+echo -n "pavithradevops:password" | openssl base64
+
+To trigger jobA from JobB:
+--------------------------
+pipeline
+{
+    agent any
+    tools
+    {
+        maven 'maven3.8.5'
+    }
+    stages
+    {
+        stage('CheckOutCode')
+        {
+            steps
+            {
+                git branch: 'master', credentialsId: '3618ffee-d89b-42a7-95c6-644de0cd31b4', url: 'https://github.com/citibank-DevOps/maven-web-application.git'
+            }
+        }
+        stage('RunTestCaseandBuild')
+        {
+            parallel(
+                Test:
+                {
+                     sh "mvn test"
+                },
+                Build:
+                {
+                    sh "mvn package"   
+                }
+            )
+        }
+            
+        }//stagesclosing
+        
+    }//pipelineclosing
+
+dir()
+
+Master slave arch:
+------------------
+label is a logical collection of slaves/nodes
+shared libraries
+Jenkins cli
+Recorded video on rsync
+
+Jenkins CLI(command line interface):
+------------------------------------
+jenkins-cli.jar
+java -jar jenkins-cli.jar -auth pavithradevops:1106c70ad45084286b74f332ded9ef5c12 -s http://13.233.212.33:8080/ -webSocket help
+>--->stdoutput
+<--->stdinput
+
+- How we can get the jenkins details from the file and how to use them in shellscripts
+- Jenkins shared libraries
+- AWS bill waveoff
+
+Jenkins Token: 1106c70ad45084286b74f332ded9ef5c12
+
+Shared Libraries:
+------------------
+Jenkins shared library is the concept of having a common pipeline code in the version control system that can be used by any no.of pipelines just by referring it. 
+in fact, multiple teams can use the same library for their pipelines.
+
+step1: create a standard dir structure and there we need to keep code snippets
+src-->groovy script source code
+vars-->shared lib code snippets
+resource-->json,properties files
+
+step2:confi' github repo to jenkins server
+
+node {
+    def mavenHome = tool name: 'maven 3.9.4'
+
+   stage('checkout code')
+{
+git branch: 'development', credentialsId: '192686a1-2130-44f8-9582-25c3279883c8', url: 'https://github.com/uselessbank/maven-web-application.git'
+}
+stage('build')
+{
+    sh "${mavenHome}/bin/mvn clean package"
+}
+stage('execute soanrqubereport')
+{
+    sh "${mavenHome}/bin/mvn sonar:sonar"
+}
+// upload artifact into nexus
+stage('upload artifact into nexus')
+{
+   sh "${mavenHome}/bin/mvn deploy"  
+}
+//tomcat
+stage('tomcat deployment')
+{
+   sshagent(['0eb5309a-fd0d-4ac3-866c-87595ae636b4'])
+     {
+    sh "scp -o StrictHostKeyChecking=no target/maven-web-application.war ec2-user@172.31.41.48:/opt/apache-tomcat-9.0.80/webapps/" 
+}
+}
+}
